@@ -1,4 +1,4 @@
-# 🚀 TOPSIS Web Service — From Algorithm to Cloud Deployment
+#  TOPSIS Web Service — From Algorithm to Cloud Deployment
 
 A **full-stack, production-ready implementation of the TOPSIS (Technique for Order Preference by Similarity to Ideal Solution)** method, built step-by-step to mirror **real-world software engineering practices**.
 
@@ -8,7 +8,7 @@ This repository is not just about TOPSIS — it documents the **entire engineeri
 
 ---
 
-## 📌 What is TOPSIS?
+##  What is TOPSIS?
 
 **TOPSIS (Technique for Order Preference by Similarity to Ideal Solution)** is a widely used **Multi-Criteria Decision Making (MCDM)** technique.
 
@@ -26,7 +26,7 @@ It is commonly used in:
 
 ---
 
-## 🧭 Project Vision
+##  Project Vision
 
 The goal of this project was **not** to stop at a working algorithm.
 Instead, the aim was to answer:
@@ -37,7 +37,7 @@ That led to a **multi-phase build**, documented below.
 
 ---
 
-## 🛠️ Phase-Wise Build Journey
+##  Phase-Wise Build Journey
 
 ```mermaid
 flowchart LR
@@ -50,7 +50,7 @@ flowchart LR
 
 ---
 
-## 🧮 Phase 1 — Core TOPSIS Algorithm
+##  Phase 1 — Core TOPSIS Algorithm
 
 * Implemented from scratch in Python
 * Steps implemented:
@@ -65,7 +65,7 @@ flowchart LR
 
 ---
 
-## 💻 Phase 2 — Command Line Interface (CLI)
+##  Phase 2 — Command Line Interface (CLI)
 
 The algorithm was wrapped into a **command-line program**.
 
@@ -86,7 +86,7 @@ topsis input.csv "1,1,1" "+,+,-" output.csv
 
 ---
 
-## 📦 Phase 3 — PyPI Package
+##  Phase 3 — PyPI Package
 
 To make the logic reusable and professional:
 
@@ -105,7 +105,7 @@ Topsis-Siddharth-102303592
 
 ---
 
-## 🌐 Phase 4 — Flask Backend (Web Service)
+##  Phase 4 — Flask Backend (Web Service)
 
 A Flask API was built on top of the PyPI package.
 
@@ -125,7 +125,7 @@ POST /api/topsis/run
 
 ---
 
-## 🎨 Phase 5 — React Frontend
+##  Phase 5 — React Frontend
 
 A modern, interactive frontend was created using **React**.
 
@@ -154,7 +154,7 @@ All assignment rules are enforced **before API call**:
 
 ---
 
-## 🧩 Frontend–Backend Interaction
+##  Frontend–Backend Interaction
 
 ```mermaid
 sequenceDiagram
@@ -173,7 +173,7 @@ sequenceDiagram
 
 ---
 
-## 🏗️ Phase 6 — Single-Service Production Build
+##  Phase 6 — Single-Service Production Build
 
 Instead of deploying frontend and backend separately:
 
@@ -188,7 +188,7 @@ This results in **one clean deployment**.
 
 ---
 
-## ☁️ Phase 7 — Cloud Deployment (Render)
+##  Phase 7 — Cloud Deployment (Render)
 
 The application was deployed as a **single Python web service** on **Render**.
 
@@ -211,7 +211,7 @@ This ensures the app is reachable on Render’s public URL.
 
 ---
 
-## 🌍 Live Application
+##  Live Application
 
 ```text
 https://topsis-web-service-yfsi.onrender.com
@@ -219,7 +219,7 @@ https://topsis-web-service-yfsi.onrender.com
 
 ---
 
-## 📁 Final Project Structure
+##  Final Project Structure
 
 ```
 Topsis-Web-Service/
@@ -241,7 +241,7 @@ Topsis-Web-Service/
 
 ---
 
-## 🧑‍💻 Author
+##  Author
 
 **Siddharth Jaswal**
 
@@ -258,7 +258,7 @@ Topsis-Web-Service/
 
 ---
 
-## 📜 License
+##  License
 
 MIT License
 
