@@ -28,19 +28,11 @@ def run_topsis_api():
     # 2️⃣ Form fields
     weights_str = request.form.get("weights")
     impacts_str = request.form.get("impacts")
-    email = request.form.get("email")
 
-    if not all([weights_str, impacts_str, email]):
+    if not all([weights_str, impacts_str]):
         return jsonify({
             "status": "error",
             "message": "weights, impacts, and email are required"
-        }), 400
-
-    # 3️⃣ Email validation
-    if not is_valid_email(email):
-        return jsonify({
-            "status": "error",
-            "message": "Invalid email format"
         }), 400
 
     # 4️⃣ Parse weights & impacts

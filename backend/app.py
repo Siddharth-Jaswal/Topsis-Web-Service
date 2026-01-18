@@ -1,6 +1,9 @@
 from flask import Flask
 from dotenv import load_dotenv
 from api.topsis_api import topsis_api
+from flask_cors import CORS
+
+
 import os
 
 load_dotenv()
@@ -9,7 +12,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 def create_app():
     app = Flask(__name__)
-
+    CORS(app)
     app.config["UPLOAD_FOLDER"] = os.path.join(BASE_DIR, "uploads")
     app.config["RESULT_FOLDER"] = os.path.join(BASE_DIR, "results")
 
