@@ -81,7 +81,7 @@ function App() {
       formData.append("weights", weights);
       formData.append("impacts", impacts);
 
-      const res = await fetch("http://127.0.0.1:5000/api/topsis/run", {
+      const res = await fetch("/api/topsis/run", {
         method: "POST",
         body: formData,
       });
@@ -146,7 +146,7 @@ function App() {
             className="download-btn"
             onClick={() =>
               (window.location.href =
-                `http://127.0.0.1:5000/api/topsis/download/${resultFile}`)
+                `/api/topsis/download/${resultFile}`)
             }
           >
             Download CSV
