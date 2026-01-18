@@ -1,6 +1,6 @@
 from flask import Flask
 from dotenv import load_dotenv
-import os
+from api.topsis_api import topsis_api
 
 load_dotenv()
 
@@ -9,6 +9,8 @@ def create_app():
 
     app.config["UPLOAD_FOLDER"] = "backend/uploads"
     app.config["RESULT_FOLDER"] = "backend/results"
+
+    app.register_blueprint(topsis_api)
 
     @app.route("/health", methods=["GET"])
     def health_check():
