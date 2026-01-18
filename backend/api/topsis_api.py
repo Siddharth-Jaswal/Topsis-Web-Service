@@ -2,6 +2,7 @@ import os
 from flask import Blueprint, request, jsonify, current_app
 from services.email_service import is_valid_email
 from services.topsis_service import parse_weights, parse_impacts
+from flask import send_file
 from services.topsis_service import run_topsis
 import uuid
 
@@ -87,3 +88,24 @@ def run_topsis_api():
         "message": "TOPSIS completed successfully",
         "result_file": result_filename
     }), 200
+
+
+@topsis_api.route("/download/<filename>", methods=["GET"])
+def download_result(filename):
+
+    result_path = os.path.join(
+        current_app.config["RESULT_FOLDER"],
+        filename
+    )
+
+    if not os.path.exists(result_path):
+        return jsonify({
+            "status": "error",
+            "message": "Result file not found"
+        }), 404
+
+    return send_file(
+        result_path,
+        as_attachment=True,
+        download_name=filename
+    )
