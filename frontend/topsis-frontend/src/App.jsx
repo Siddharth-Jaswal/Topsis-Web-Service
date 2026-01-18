@@ -4,59 +4,111 @@ function App() {
   const [file, setFile] = useState(null);
   const [weights, setWeights] = useState("");
   const [impacts, setImpacts] = useState("");
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const [resultFile, setResultFile] = useState("");
+
+  const parseCSV = async (file) => {
+    const text = await file.text();
+    const clean = text.replace(/\ufeff/g, "").trim();
+
+    const rows = clean
+      .split(/\r?\n/)
+      .map((row) => row.split(",").map((c) => c.trim()))
+      .filter((row) => row.length > 1);
+
+    if (rows.length < 2) {
+      throw new Error("CSV file has no data rows");
+    }
+
+    return rows;
+  };
+
+  const validateInputs = async () => {
+    if (!file) {
+      throw new Error("CSV file is required");
+    }
+
+    const rows = await parseCSV(file);
+
+    if (rows[0].length < 3) {
+      throw new Error("CSV must contain at least 3 columns");
+    }
+
+    const criteriaCount = rows[0].length - 1;
+
+    const weightArr = weights.split(",").map((w) => w.trim());
+    const impactArr = impacts.split(",").map((i) => i.trim());
+
+    if (weightArr.length !== criteriaCount) {
+      throw new Error("Number of weights must match criteria count");
+    }
+
+    if (impactArr.length !== criteriaCount) {
+      throw new Error("Number of impacts must match criteria count");
+    }
+
+    if (!weightArr.every((w) => w !== "" && !isNaN(w))) {
+      throw new Error("Weights must be numeric and comma-separated");
+    }
+
+    if (!impactArr.every((i) => i === "+" || i === "-")) {
+      throw new Error("Impacts must be either + or -");
+    }
+
+    for (let i = 1; i < rows.length; i++) {
+      for (let j = 1; j < rows[i].length; j++) {
+        if (rows[i][j] === "" || isNaN(rows[i][j])) {
+          throw new Error(
+            `Non-numeric value found at row ${i + 1}, column ${j + 1}`
+          );
+        }
+      }
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setResultFile("");
 
-    if (!file || !weights || !impacts) {
-      setError("Please provide CSV file, weights, and impacts.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("weights", weights);
-    formData.append("impacts", impacts);
-
     try {
       setLoading(true);
+      await validateInputs();
 
-      const response = await fetch("http://127.0.0.1:5000/api/topsis/run", {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("weights", weights);
+      formData.append("impacts", impacts);
+
+      const res = await fetch("http://127.0.0.1:5000/api/topsis/run", {
         method: "POST",
-        body: formData
+        body: formData,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Something went wrong");
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || "Server error");
       }
 
       setResultFile(data.result_file);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Unexpected error occurred");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDownload = () => {
-    window.location.href =
-      `http://127.0.0.1:5000/api/topsis/download/${resultFile}`;
-  };
-
   return (
-    <div style={{ maxWidth: "600px", margin: "2rem auto", fontFamily: "sans-serif" }}>
-      <h1>TOPSIS Web Tool</h1>
+    <div className="container">
+      <h1>TOPSIS Analyzer</h1>
+      <p className="subtitle">Multi-Criteria Decision Making Tool</p>
+
+      {error && <div className="error">{error}</div>}
 
       <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: "1rem" }}>
-          <label>CSV File</label><br />
+        <div className="form-group">
+          <label>CSV File</label>
           <input
             type="file"
             accept=".csv"
@@ -64,40 +116,40 @@ function App() {
           />
         </div>
 
-        <div style={{ marginBottom: "1rem" }}>
-          <label>Weights (comma-separated)</label><br />
+        <div className="form-group">
+          <label>Weights (e.g. 1,1,1)</label>
           <input
             type="text"
-            placeholder="1,1,1"
             value={weights}
             onChange={(e) => setWeights(e.target.value)}
-            style={{ width: "100%" }}
           />
         </div>
 
-        <div style={{ marginBottom: "1rem" }}>
-          <label>Impacts (comma-separated)</label><br />
+        <div className="form-group">
+          <label>Impacts (e.g. +,+,-)</label>
           <input
             type="text"
-            placeholder="+,+,-"
             value={impacts}
             onChange={(e) => setImpacts(e.target.value)}
-            style={{ width: "100%" }}
           />
         </div>
 
-        {error && <p style={{ color: "red" }}>{error}</p>}
-
         <button type="submit" disabled={loading}>
-          {loading ? "Processing..." : "Run TOPSIS"}
+          {loading ? "Processing…" : "Run TOPSIS"}
         </button>
       </form>
 
       {resultFile && (
-        <div style={{ marginTop: "2rem" }}>
-          <h3>Result Ready</h3>
-          <button onClick={handleDownload}>
-            Download Result CSV
+        <div className="success">
+          Result ready
+          <button
+            className="download-btn"
+            onClick={() =>
+              (window.location.href =
+                `http://127.0.0.1:5000/api/topsis/download/${resultFile}`)
+            }
+          >
+            Download CSV
           </button>
         </div>
       )}
