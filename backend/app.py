@@ -1,9 +1,6 @@
-from flask import Flask
+from flask import Flask, send_from_directory
 from dotenv import load_dotenv
 from api.topsis_api import topsis_api
-from flask_cors import CORS
-
-
 import os
 
 load_dotenv()
@@ -11,8 +8,12 @@ load_dotenv()
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 def create_app():
-    app = Flask(__name__)
-    CORS(app)
+    app = Flask(
+        __name__,
+        static_folder="static",
+        static_url_path=""
+    )
+
     app.config["UPLOAD_FOLDER"] = os.path.join(BASE_DIR, "uploads")
     app.config["RESULT_FOLDER"] = os.path.join(BASE_DIR, "results")
 
@@ -21,13 +22,22 @@ def create_app():
 
     app.register_blueprint(topsis_api)
 
-    @app.route("/health", methods=["GET"])
-    def health_check():
-        return {"status": "ok"}, 200
+    # Serve React frontend
+    @app.route("/")
+    def serve_frontend():
+        return send_from_directory(app.static_folder, "index.html")
+
+    # Catch-all route (React routing safety)
+    @app.route("/<path:path>")
+    def static_proxy(path):
+        file_path = os.path.join(app.static_folder, path)
+        if os.path.exists(file_path):
+            return send_from_directory(app.static_folder, path)
+        return send_from_directory(app.static_folder, "index.html")
 
     return app
 
 
 if __name__ == "__main__":
     app = create_app()
-    app.run(debug=True)
+    app.run(debug=False)
