@@ -6,19 +6,48 @@ function App() {
   const [impacts, setImpacts] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [resultFile, setResultFile] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setResultFile("");
 
     if (!file || !weights || !impacts) {
       setError("Please provide CSV file, weights, and impacts.");
       return;
     }
 
-    // Backend call will be added in next stage
-    setLoading(true);
-    setTimeout(() => setLoading(false), 1000);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("weights", weights);
+    formData.append("impacts", impacts);
+
+    try {
+      setLoading(true);
+
+      const response = await fetch("http://127.0.0.1:5000/api/topsis/run", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Something went wrong");
+      }
+
+      setResultFile(data.result_file);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDownload = () => {
+    window.location.href =
+      `http://127.0.0.1:5000/api/topsis/download/${resultFile}`;
   };
 
   return (
@@ -63,6 +92,15 @@ function App() {
           {loading ? "Processing..." : "Run TOPSIS"}
         </button>
       </form>
+
+      {resultFile && (
+        <div style={{ marginTop: "2rem" }}>
+          <h3>Result Ready</h3>
+          <button onClick={handleDownload}>
+            Download Result CSV
+          </button>
+        </div>
+      )}
     </div>
   );
 }
