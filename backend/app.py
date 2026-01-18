@@ -1,14 +1,20 @@
 from flask import Flask
 from dotenv import load_dotenv
 from api.topsis_api import topsis_api
+import os
 
 load_dotenv()
+
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 def create_app():
     app = Flask(__name__)
 
-    app.config["UPLOAD_FOLDER"] = "backend/uploads"
-    app.config["RESULT_FOLDER"] = "backend/results"
+    app.config["UPLOAD_FOLDER"] = os.path.join(BASE_DIR, "uploads")
+    app.config["RESULT_FOLDER"] = os.path.join(BASE_DIR, "results")
+
+    os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+    os.makedirs(app.config["RESULT_FOLDER"], exist_ok=True)
 
     app.register_blueprint(topsis_api)
 
